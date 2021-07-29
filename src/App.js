@@ -4,7 +4,7 @@ import Header from './components/Layout/Header';
 import Meals from './components/Meals/Meals';
 import Cart from './components/Cart/Cart';
 import CartProvider from './store/CartProvider';
-import OrderForm from './components/Order/OrderForm'
+import NewOrder from './components/Order/NewOrder'
 
 function App() {
   const [cartIsShown, setCartIsShown] = useState(false);
@@ -32,7 +32,7 @@ function App() {
   return (
     <CartProvider>
       {cartIsShown && <Cart onClose={hideCartHandler} onShowOrderForm={showOrderFormHandler} />}
-      {orderFormIsShown && <OrderForm onClose={hideOrderFormHandler} />}
+      {orderFormIsShown && <NewOrder onClose={hideOrderFormHandler} />}
       <Header onShowCart={showCartHandler} />
     
       <main>

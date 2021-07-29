@@ -44,8 +44,21 @@ const OrderForm = (props) => {
       return;
     }
 
+    props.onEnterOrder(
+      {
+        firstName:firstNameValue,
+        lastName:lastNameValue,
+        email:emailValue,
+        orderData:{
+          
+        }
+      }
+    );
     console.log('Submitted!');
+
     console.log(firstNameValue, lastNameValue, emailValue);
+
+    
 
     resetFirstName();
     resetLastName();
@@ -61,7 +74,7 @@ const OrderForm = (props) => {
   //const emailClasses = emailHasError ? 'form-control invalid' : 'form-control';
 
   return (
-    <Modal onClose={props.onClose}>
+    <Modal onClose={props.onOrderFormClose}>
     <form onSubmit={submitHandler}>
       <div className={classes['control-group']}>
         <div className={firstNameClasses}>
