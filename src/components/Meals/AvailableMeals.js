@@ -2,9 +2,9 @@ import Card from '../UI/Card';
 import MealItem from './MealItem/MealItem';
 import classes from './AvailableMeals.module.css';
 import useHttp from '../../hooks/httpHook'
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const DUMMY_MEALS = [
+/* const DUMMY_MEALS = [
   {
     id: 'm1',
     name: 'Sushi',
@@ -29,42 +29,60 @@ const DUMMY_MEALS = [
     description: 'Healthy...and green...',
     price: 18.99,
   },
-];
+]; */
 
 const AvailableMeals = () => {
 
 
-
   const [meals, setMeals] = useState([]);
+  const [loading, setIsloading] = useState(true);
+  const[httpError,setHttpError]=useState();
+
   
-  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
 
-  useEffect(() => {
+  useEffect(async () => {
 
-    const transformMeals = (meals) => {
-      const loadedMeals = [];
-
-      for (const meal in meals) {
-        loadedMeals.push({ id: meals[meal].id, 
-          name: meals[meal].name,
-          desc:meals[meal].desc, 
-          price: meals[meal].price });
-      }
-
-      setMeals(loadedMeals);
-
-    };   
-
-    fetchTasks(
-      {
-        url: 'https://react-http-asd-default-rtdb.europe-west1.firebasedatabase.app/meals.json'
-      }, transformMeals);
-  }, [fetchTasks]);
-
- let mealsList=<p>loading...</p>;
-   if(!isLoading && !error && meals!==null ){
+   const  fetchMeals = async () =>{
+   const response =  await fetch('https://react-http-asd-default-rtdb.europe-west1.firebasedatabase.app/MealsM.json')
   
-    mealsList = meals.map((meal) => (
+  if(!response.ok){
+    throw new Error('SWH:)')
+  }
+   const repsonseData = await response.json();
+ 
+  const loadedMeals =[];
+  for(const key in repsonseData){
+    loadedMeals.push({ 
+      id : key, 
+      name : repsonseData[key].name , 
+      description:repsonseData[key].description,
+      price:repsonseData[key].price})
+  }
+
+  setMeals(loadedMeals);
+  setIsloading(false);
+  }
+
+   fetchMeals().catch(error => {
+    setIsloading(false);
+    setHttpError(error.message);
+   }) ;
+    
+  
+
+  }, []) 
+  
+  ;debugger
+  if (loading) {
+    return <section className={classes.MealsLoading}><p>Loading..</p></section>  
+  }
+  if(httpError){
+    return <section className={classes.MealsError}><p>{httpError}</p></section>  
+  }
+
+  if(!loading && !httpError){
+
+  let  mealsList = meals.map((meal) => (
       <MealItem
         key={meal.id}
         id={meal.id}
@@ -73,17 +91,18 @@ const AvailableMeals = () => {
         price={meal.price}
       />
     ));
-   }
   
-  console.log(mealsList);
 
   return (
+   
     <section className={classes.meals}>
-      <Card>
-        <ul>{mealsList}</ul>
-      </Card>
-    </section>
-  );
+       <Card>
+         <ul>{mealsList}</ul>
+       </Card>
+     </section>
+   );
+}
+  
 };
 
 export default AvailableMeals;
